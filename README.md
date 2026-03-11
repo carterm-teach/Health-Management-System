@@ -1,2 +1,2 @@
 # Health-Management-System
-Demo to help kids get stated with repositories and app development.
+Demo to help CS students get stated with repositories and app development.
