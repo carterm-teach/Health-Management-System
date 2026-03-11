@@ -1,26 +1,3 @@
-
-Fit Page
-
-
-
-Drawing
-
-
-
-Image
-
-
-
-
-
-
-
-Line
-
-
-
-
-
 #include "User.h"
 #include "Insurance.h"
 #include "MedicalRecord.h"
