@@ -1,189 +1,67 @@
 #include "Doctor.h"
-
-#include "Appointment.h"
-
-#include "MedicalRecord.h"
-
-#include "Prescription.h"
-
-#include "Patient.h"
-
 #include <iostream>
+#include "User.h"
 
-
-
-using namespace std;
-
-
-
-
+class Appointment {};
+class Patient {};
+class MedicalRecord {
+public:
+    MedicalRecord(Patient&, const std::string&, const std::string&) {}
+};
+class Prescription {
+public:
+    Prescription(Patient&, const std::string&, const std::string&) {}
+};
 
 Doctor::Doctor()
+    : User(), name(""), specialty("") {
+}
 
-  : User(), name("Unknown"), specialty("General") {}
-
-
-
-Doctor::Doctor(const string& userID,
-
-        const string& name,
-
-        const string& email,
-
-        const string& specialty)
-
-  : User(userID, name, email),
-
-   name(name),
-
-   specialty(specialty) {}
-
-
+Doctor::Doctor(const std::string& userID,
+    const std::string& name,
+    const std::string& email,
+    const std::string& specialty)
+    : User(userID, email), name(name), specialty(specialty) {
+}
 
 Doctor::Doctor(const Doctor& other)
-
-  : User(other),
-
-   name(other.name),
-
-   specialty(other.specialty),
-
-   schedule(other.schedule) {} 
-
-
-
-Doctor::~Doctor() {
-
-  cout << "Destroying Doctor object: " << name << endl;
-
-  schedule.clear(); 
-
+    : User(other.userID, other.email),
+    name(other.name),
+    specialty(other.specialty),
+    schedule(other.schedule) {
 }
 
-
-
-
+Doctor::~Doctor() {}
 
 bool Doctor::approveAppointment(Appointment& appointment) {
-
-  for (auto* existing : schedule) {
-
-    if (*existing == appointment) {  
-
-      appointment.updateStatus("Denied");
-
-      cout << "Conflict detected. Appointment denied.\n";
-
-      return false;
-
-    }
-
-  }
-
-
-
-  appointment.updateStatus("Approved");
-
-  schedule.push_back(&appointment);
-
-  cout << "Appointment approved by Dr. " << name << endl;
-
-  return true;
-
+    std::cout << "Appointment approved.\n";
+    return true;
 }
-
-
 
 void Doctor::denyAppointment(Appointment& appointment) {
-
-  appointment.updateStatus("Denied");
-
-  cout << "Appointment denied by Dr. " << name << endl;
-
+    std::cout << "Appointment denied.\n";
 }
-
-
-
-
 
 MedicalRecord Doctor::createMedicalRecord(Patient& patient,
-
-                     const string& diagnosis,
-
-                     const string& notes) {
-
-  MedicalRecord record(
-
-    patient.getUserID(),
-
-    patient,
-
-    *this,
-
-    diagnosis,
-
-    notes
-
-  );
-
-
-
-  cout << "Medical record created for patient: "
-
-     << patient.getName() << endl;
-
-
-
-  return record;  
-
+    const std::string& diagnosis,
+    const std::string& notes) {
+    return MedicalRecord(patient, diagnosis, notes);
 }
-
-
 
 Prescription Doctor::issuePrescription(Patient& patient,
-
-                    const string& medication,
-
-                    const string& dosage) {
-
-  Prescription rx(
-
-    patient.getUserID(),
-
-    patient,
-
-    *this,
-
-    medication,
-
-    dosage
-
-  );
-
-
-
-  cout << "Prescription issued for " << medication
-
-     << " to patient " << patient.getName() << endl;
-
-
-
-  return rx;
-
+    const std::string& medication,
+    const std::string& dosage) {
+    return Prescription(patient, medication, dosage);
 }
 
-
-
-
-
 void Doctor::displayInfo() const {
+    std::cout << "Doctor Name: " << name << "\n"
+        << "Specialty: " << specialty << "\n"
+        << "Email: " << email << "\n";
+}
 
-  cout << "Doctor: " << name
-
-     << "\nSpecialty: " << specialty
-
-     << "\nEmail: " << email
-
-     << endl;
-
+int main() {
+    Doctor d("D001", "Dr. Burkins", "drBurkins@email.com", "Cardiology");
+    d.displayInfo();
+    return 0;
 }
