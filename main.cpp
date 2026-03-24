@@ -1,85 +1,55 @@
-#include "User.hpp"
-#include <string>
 #include <iostream>
+#include "User.hpp"// used in mac.....use "User.h" with other types
+
 using namespace std;
-int User::totalUsers = 0;
-vector<User> User::users;
-User::User()
+
+int main()
 {
-    userID = 0;
-    name = " ";
-    email = " ";
-    totalUsers++;
-}
-User::User(int uid,string n,string e)
-{
-    userID = uid;
-    name = n;
-    email = e;
-    totalUsers++;
-}
-User::~User()
-{
-}
-void User::setuserId(int uid)
-{
-    userID = uid;
-}
-void User::setname(string n)
-{
-    name = n;
-}
-void User::setemail(string e)
-{
-    email = e;
-}
-int User::getuserID()const
-{
-    return userID;
-}
-string User::getname()const
-{
-    return name;
-}
-string User::getemail()const
-{
-    return email;
-}
-int User::getTotalUsers()
-{
-    return totalUsers;
-}
-void User::addUser()
-{
-    cout<<"Adding user "<< userID<<endl;
-    users.push_back(*this);
-    cout<<"Added successfully"<<endl;
-}
-void User::Login()const
-{
-    int enteredID=0;
-    bool login = false;
-    cout<< ":::User Login:::" <<endl;
-    cout << "Enter your ID number: ";
-    cin >> enteredID;
-    if(enteredID == userID)
-    {
-        cout<<"Welcome "<<name<<endl;;
-        login = true;
-    }
-    else
-    {
-        cout<<"Wrong Id #\n unsuccesfull log in attempt\n";
-    }
-}
-void User::Logout()const
-{
+    cout << "::: User System Test:::\n" << endl;
+//create users
+    User u1(101, "Mekale","mekale@email.com");
+    User u2(102, "Jordan","jordan@email.com");
+    User u3(103, "Taylor","taylor@email.com");
+//confirm creation
+    cout << "Users constructed." << endl;
+
+    // Add users to static list
+    cout << "\nAdding users to system..." << endl;
+
+    u1.addUser();
+    u2.addUser();
+    u3.addUser();
+
+    cout << "Users added successfully." << endl;
+
+    // Show total users created
+    cout << "\nTotal Users (objects created): "
+         << User::totalUsers << endl;
+    //Demo Login
+    // Ask for the name
+        cout << "Enter a name t osearch: ";
+        string name;
+        cin >> name;
+
+        bool found = false;
+
+        // Loop over the static vector of users
+        for (const User& u : User::users)
+        {
+            if (u.getname() ==name)
+            {
+                cout<<"User found... Enter Id number for login: ";
+                u.Login();
+                u.DisplayUserInfo();
+                found = true;
+                break;  // stop after first match
+                
+            }
+        }
+
+        if (!found) {
+            cout << "User not found" << endl;
+        }
     
-}
-void User::DisplayUserInfo()const
-{
-    cout<<endl;
-    cout<<userID<<endl;
-    cout<<name<<endl;
-    cout<<email<<endl;
+    return 0;
 }
