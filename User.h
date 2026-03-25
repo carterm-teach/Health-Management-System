@@ -1,5 +1,5 @@
-#ifndef User_hpp
-#define User_hpp
+#ifndef User_h
+#define User_h
 
 #include <stdio.h>
 #include <string>

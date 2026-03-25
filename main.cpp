@@ -1,5 +1,5 @@
 #include <iostream>
-#include "User.hpp"// used in mac.....use "User.h" with other types
+#include "User.h"// used in mac.....use "User.h" with other types
 
 using namespace std;
 
