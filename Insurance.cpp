@@ -1,4 +1,4 @@
-#include "insurance.h"
+#include "Insurance.h"
 #include "Billing.h" // Billing must declare: friend class Insurance;
 // Default Constructor
 Insurance::Insurance()
