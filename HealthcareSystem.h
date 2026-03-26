@@ -1,6 +1,7 @@
 #ifndef HEALTHCARESYSTEM_H
 #define HEALTHCARESYSTEM_H
 #include <vector>
+#include <string>
 class User;
 class Appointment;
 class MedicalRecord;
@@ -17,5 +18,6 @@ void scheduleAppointment(Appointment* appointment);
 void addMedicalRecord(MedicalRecord* record);
 void manageSystemOperations();
 void generateReport() const;
+User* findUser(const std::string& name) const;
 };
 #endif
