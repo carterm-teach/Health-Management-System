@@ -38,3 +38,4 @@ NotifService::~NotifService()
 {
 cout << "\nNotifService ended." << endl;
 cout << "Total notifications sent: " << notificationsSent << endl;
+}
