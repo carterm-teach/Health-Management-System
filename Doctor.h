@@ -19,7 +19,7 @@ private:
 
 public:
     Doctor();
-    Doctor(const std::string& userID,
+    Doctor(int userID,
         const std::string& name,
         const std::string& email,
         const std::string& specialty);

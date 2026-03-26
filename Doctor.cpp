@@ -17,15 +17,15 @@ Doctor::Doctor()
     : User(), name(""), specialty("") {
 }
 
-Doctor::Doctor(const std::string& userID,
+Doctor::Doctor(int userID,
     const std::string& name,
     const std::string& email,
     const std::string& specialty)
-    : User(userID, email), name(name), specialty(specialty) {
+    : User(userID, name, email), name(name), specialty(specialty) {
 }
 
 Doctor::Doctor(const Doctor& other)
-    : User(other.userID, other.email),
+    : User(other.userID, other.name, other.email),
     name(other.name),
     specialty(other.specialty),
     schedule(other.schedule) {
