@@ -1,5 +1,7 @@
 #include "HealthcareSystem.h"
 #include "User.h"
+#include "Appointment.h"
+#include "MedicalRecord.h"
 #include <iostream>
 using namespace std;
 HealthcareSystem::HealthcareSystem() {
@@ -37,6 +39,10 @@ cout << "\n===== System Report =====" << endl;
 cout << "Total Users: " << users.size() << endl;
 cout << "Total Appointments: " << appointments.size() << endl;
 cout << "Total Medical Records: " << records.size() << endl;
+}
+void HealthcareSystem::scheduleAppointment(Patient* patient, Doctor* doctor) {
+    // Full implementation comes in Step 2 (HealthcareSystem creates Appointment)
+    cout << "Appointment request received. Pending scheduling." << endl;
 }
 User* HealthcareSystem::findUser(const string& name) const {
 for (User* user : users) {

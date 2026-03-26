@@ -3,6 +3,8 @@
 #include <vector>
 #include <string>
 class User;
+class Patient;
+class Doctor;
 class Appointment;
 class MedicalRecord;
 class HealthcareSystem {
@@ -15,6 +17,7 @@ HealthcareSystem(); // constructor
 ~HealthcareSystem(); // destructor
 void registerUser(User* user);
 void scheduleAppointment(Appointment* appointment);
+void scheduleAppointment(Patient* patient, Doctor* doctor); // called by Patient::requestAppointment
 void addMedicalRecord(MedicalRecord* record);
 void manageSystemOperations();
 void generateReport() const;
