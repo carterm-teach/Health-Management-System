@@ -30,3 +30,5 @@ bool operator<(const Appointment& other) const;
 int getAppointmentID() const;
 string getDateTime() const;
 string getStatus() const;
+};
+#endif
