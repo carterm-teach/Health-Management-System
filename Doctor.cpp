@@ -60,8 +60,8 @@ void Doctor::displayInfo() const {
         << "Email: " << email << "\n";
 }
 
-int main() {
-    Doctor d("D001", "Dr. Burkins", "drBurkins@email.com", "Cardiology");
-    d.displayInfo();
-    return 0;
-}
+// int main() {
+//     Doctor d("D001", "Dr. Burkins", "drBurkins@email.com", "Cardiology");
+//     d.displayInfo();
+//     return 0;
+// }
