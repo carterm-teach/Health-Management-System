@@ -4,6 +4,7 @@
 #include "User.h"
 #include "Patient.h"
 #include "Doctor.h"
+#include "Insurance.h"
 
 using namespace std;
 
@@ -21,8 +22,9 @@ int main() {
     // This satisfies the requirement: "Create Patient and Doctor objects (update static counters)".
     // ------------------------------------------------------------------
 
-    // The 'nullptr' at the end is for Insurance — Abel's class isn't needed yet for step 1.
-    Patient* seedPatient = new Patient(1, "Alice Johnson", "alice@email.com", nullptr);
+    // Create a real Insurance object using Abel's class (provider, policy number, coverage %)
+    Insurance* seedInsurance = new Insurance("BlueCross", "BC-001", 80.0);
+    Patient* seedPatient = new Patient(1, "Alice Johnson", "alice@email.com", seedInsurance);
 
     // NOTE: Doctor's parameterized constructor has a bug in Doctor.cpp (Damien needs to fix it):
     //   - It calls User(userID, email) but User requires User(int, string, string) — 3 args, not 2
@@ -80,8 +82,19 @@ int main() {
         cin >> email;
 
         if (userType == 1) {
-            // Insurance is nullptr for now — will be wired up when Abel's class is ready.
-            Patient* newPatient = new Patient(id, name, email, nullptr);
+            // Collect insurance info for the new patient using Abel's Insurance class
+            string provider, policy;
+            double coverage;
+            cin.ignore();
+            cout << "Enter insurance provider name: ";
+            getline(cin, provider);
+            cout << "Enter policy number: ";
+            cin >> policy;
+            cout << "Enter coverage percentage (e.g. 80 for 80%): ";
+            cin >> coverage;
+
+            Insurance* newInsurance = new Insurance(provider, policy, coverage);
+            Patient* newPatient = new Patient(id, name, email, newInsurance);
             system.registerUser(newPatient);
 
             cout << endl << "Patient registered successfully!" << endl;
@@ -89,7 +102,6 @@ int main() {
 
         } else if (userType == 2) {
             string specialty;
-            cin.ignore();
             cout << "Enter your specialty: ";
             getline(cin, specialty);
 
