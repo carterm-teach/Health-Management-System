@@ -1,4 +1,5 @@
 #include "HealthcareSystem.h"
+#include "User.h"
 #include <iostream>
 using namespace std;
 HealthcareSystem::HealthcareSystem() {
@@ -36,4 +37,12 @@ cout << "\n===== System Report =====" << endl;
 cout << "Total Users: " << users.size() << endl;
 cout << "Total Appointments: " << appointments.size() << endl;
 cout << "Total Medical Records: " << records.size() << endl;
+}
+User* HealthcareSystem::findUser(const string& name) const {
+for (User* user : users) {
+    if (user->getname() == name) {
+        return user;
+    }
+}
+return nullptr;
 }
