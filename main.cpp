@@ -1,55 +1,130 @@
 #include <iostream>
-#include "User.h"// used in mac.....use "User.h" with other types
+#include <string>
+#include "HealthcareSystem.h"
+#include "User.h"
+#include "Patient.h"
+#include "Doctor.h"
 
 using namespace std;
 
-int main()
-{
-    cout << "::: User System Test:::\n" << endl;
-//create users
-    User u1(101, "Mekale","mekale@email.com");
-    User u2(102, "Jordan","jordan@email.com");
-    User u3(103, "Taylor","taylor@email.com");
-//confirm creation
-    cout << "Users constructed." << endl;
+int main() {
+    cout << "=== Healthcare Management System ===" << endl << endl;
 
-    // Add users to static list
-    cout << "\nAdding users to system..." << endl;
+    // Create the central controller — this is Demi's HealthcareSystem class.
+    // Every user, appointment, and record flows through this object.
+    HealthcareSystem system;
 
-    u1.addUser();
-    u2.addUser();
-    u3.addUser();
+    // ------------------------------------------------------------------
+    // STEP 1A: PRE-SEEDED DATA
+    // We silently create one Patient and one Doctor at startup.
+    // Their constructors chain up to User(), which increments totalUsers.
+    // This satisfies the requirement: "Create Patient and Doctor objects (update static counters)".
+    // ------------------------------------------------------------------
 
-    cout << "Users added successfully." << endl;
+    // The 'nullptr' at the end is for Insurance — Abel's class isn't needed yet for step 1.
+    Patient* seedPatient = new Patient(1, "Alice Johnson", "alice@email.com", nullptr);
 
-    // Show total users created
-    cout << "\nTotal Users (objects created): "
-         << User::totalUsers << endl;
-    //Demo Login
-    // Ask for the name
-        cout << "Enter a name t osearch: ";
-        string name;
-        cin >> name;
+    // NOTE: Doctor's parameterized constructor has a bug in Doctor.cpp (Damien needs to fix it):
+    //   - It calls User(userID, email) but User requires User(int, string, string) — 3 args, not 2
+    //   - It passes userID as a string but User stores it as an int
+    // Workaround: I'm using the default constructor, then use inherited setters to set the fields.
+    Doctor* seedDoctor = new Doctor();
+    seedDoctor->setuserId(2);
+    seedDoctor->setname("Dr. Smith");
+    seedDoctor->setemail("drsmith@email.com");
 
-        bool found = false;
+    // Register both with the HealthcareSystem (adds them to the system's internal users list)
+    system.registerUser(seedPatient);
+    system.registerUser(seedDoctor);
 
-        // Loop over the static vector of users
-        for (const User& u : User::users)
-        {
-            if (u.getname() ==name)
-            {
-                cout<<"User found... Enter Id number for login: ";
-                u.Login();
-                u.DisplayUserInfo();
-                found = true;
-                break;  // stop after first match
-                
-            }
+    cout << "Pre-seeded 1 Patient and 1 Doctor." << endl;
+    cout << "Total users created so far: " << User::getTotalUsers() << endl;
+
+    cout << endl;
+
+    // ------------------------------------------------------------------
+    // STEP 1B: INTERACTIVE FLOW — New or Returning User
+    // ------------------------------------------------------------------
+
+    int choice;
+    cout << "Welcome to the Healthcare Management System" << endl;
+    cout << "1. I am a new user" << endl;
+    cout << "2. I am a returning user" << endl;
+    cout << "Enter choice (1 or 2): ";
+    cin >> choice;
+    cout << endl;
+
+    if (choice == 1) {
+        // ---- NEW USER ----
+        int userType;
+        cout << "What type of user are you?" << endl;
+        cout << "1. Patient" << endl;
+        cout << "2. Doctor" << endl;
+        cout << "Enter choice (1 or 2): ";
+        cin >> userType;
+        cout << endl;
+
+        // Collect info common to both Patient and Doctor
+        int id;
+        string name, email;
+
+        cout << "Enter your ID number: ";
+        cin >> id;
+
+        cin.ignore();
+
+        cout << "Enter your full name: ";
+        getline(cin, name); 
+
+        cout << "Enter your email: ";
+        cin >> email;
+
+        if (userType == 1) {
+            // Insurance is nullptr for now — will be wired up when Abel's class is ready.
+            Patient* newPatient = new Patient(id, name, email, nullptr);
+            system.registerUser(newPatient);
+
+            cout << endl << "Patient registered successfully!" << endl;
+            newPatient->DisplayUserInfo();
+
+        } else if (userType == 2) {
+            string specialty;
+            cin.ignore();
+            cout << "Enter your specialty: ";
+            getline(cin, specialty);
+
+            // Same workaround as the pre-seeded doctor above — using default constructor + setters.
+            // NOTE for Damien: Doctor needs a working parameterized constructor and a setSpecialty() method before specialty can be stored here.
+            Doctor* newDoctor = new Doctor();
+            newDoctor->setuserId(id);
+            newDoctor->setname(name);
+            newDoctor->setemail(email);
+            system.registerUser(newDoctor);
+
+            cout << endl << "Doctor registered successfully!" << endl;
+            newDoctor->DisplayUserInfo();
         }
 
-        if (!found) {
-            cout << "User not found" << endl;
+        cout << "\nTotal users in system now: " << User::getTotalUsers() << endl;
+
+    } else if (choice == 2) {
+        // ---- RETURNING USER ----
+        string searchName;
+        cin.ignore();
+        cout << "Enter your full name: ";
+        getline(cin, searchName);
+
+        // findUser() is our method on HealthcareSystem — searches the registered users by name.
+        User* found = system.findUser(searchName);
+
+        if (found != nullptr) {
+            cout << endl << "User found!" << endl;
+            found->Login();           // Login() — prompts for ID and validates it
+            found->DisplayUserInfo(); // DisplayUserInfo() — prints ID, name, email
+        } else {
+            cout << "No user found with that name." << endl;
         }
-    
+    }
+
     return 0;
 }
