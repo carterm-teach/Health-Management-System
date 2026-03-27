@@ -11,42 +11,35 @@ using namespace std;
 int main() {
     cout << "=== Healthcare Management System ===" << endl << endl;
 
-    // Create the central controller — this is Demi's HealthcareSystem class.
-    // Every user, appointment, and record flows through this object.
+    // Create the central controller — Demi's HealthcareSystem class.
     HealthcareSystem system;
 
     // ------------------------------------------------------------------
     // STEP 1A: PRE-SEEDED DATA
-    // We silently create one Patient and one Doctor at startup.
-    // Their constructors chain up to User(), which increments totalUsers.
-    // This satisfies the requirement: "Create Patient and Doctor objects (update static counters)".
+    // Creates one Patient and one Doctor at startup.
+    // Their constructors chain up to User(), incrementing totalUsers.
+    // This satisfies: "Create Patient and Doctor objects (update static counters)".
     // ------------------------------------------------------------------
 
-    // Create a real Insurance object using Abel's class (provider, policy number, coverage %)
     Insurance* seedInsurance = new Insurance("BlueCross", "BC-001", 80.0);
     Patient* seedPatient = new Patient(1, "Alice Johnson", "alice@email.com", seedInsurance);
 
-    // NOTE: Doctor's parameterized constructor has a bug in Doctor.cpp (Damien needs to fix it):
-    //   - It calls User(userID, email) but User requires User(int, string, string) — 3 args, not 2
-    //   - It passes userID as a string but User stores it as an int
-    // Workaround: I'm using the default constructor, then use inherited setters to set the fields.
-    Doctor* seedDoctor = new Doctor();
-    seedDoctor->setuserId(2);
-    seedDoctor->setname("Dr. Smith");
-    seedDoctor->setemail("drsmith@email.com");
+    // Doctor constructor is now fixed — using parameterized constructor directly
+    Doctor* seedDoctor = new Doctor(2, "Dr. Smith", "drsmith@email.com", "Cardiology");
 
-    // Register both with the HealthcareSystem (adds them to the system's internal users list)
     system.registerUser(seedPatient);
     system.registerUser(seedDoctor);
 
     cout << "Pre-seeded 1 Patient and 1 Doctor." << endl;
-    cout << "Total users created so far: " << User::getTotalUsers() << endl;
-
-    cout << endl;
+    cout << "Total users created so far: " << User::getTotalUsers() << endl << endl;
 
     // ------------------------------------------------------------------
     // STEP 1B: INTERACTIVE FLOW — New or Returning User
+    // activePatient tracks whoever just logged in/registered as a Patient,
+    // so we can use them for the appointment request in Step 2.
     // ------------------------------------------------------------------
+
+    Patient* activePatient = nullptr; // will be set if the active user is a Patient
 
     int choice;
     cout << "Welcome to the Healthcare Management System" << endl;
@@ -66,21 +59,19 @@ int main() {
         cin >> userType;
         cout << endl;
 
-        // Collect info common to both Patient and Doctor
-        // ID is auto-assigned based on how many users already exist in the system
+        // Auto-assign ID based on how many users already exist
         int id = User::getTotalUsers() + 1;
         string name, email;
 
         cin.ignore();
-
         cout << "Enter your full name: ";
-        getline(cin, name); 
+        getline(cin, name);
 
         cout << "Enter your email: ";
         cin >> email;
 
         if (userType == 1) {
-            // Collect insurance info for the new patient using Abel's Insurance class
+            // Collect insurance info using Abel's Insurance class
             string provider, policy;
             double coverage;
             cin.ignore();
@@ -98,21 +89,21 @@ int main() {
             cout << endl << "Patient registered successfully!" << endl;
             newPatient->DisplayUserInfo();
 
+            activePatient = newPatient; // this user is now the active patient for Step 2
+
         } else if (userType == 2) {
             string specialty;
+            cin.ignore();
             cout << "Enter your specialty: ";
             getline(cin, specialty);
 
-            // Same workaround as the pre-seeded doctor above — using default constructor + setters.
-            // NOTE for Damien: Doctor needs a working parameterized constructor and a setSpecialty() method before specialty can be stored here.
-            Doctor* newDoctor = new Doctor();
-            newDoctor->setuserId(id);
-            newDoctor->setname(name);
-            newDoctor->setemail(email); // specialty can't be set until Damien adds setSpecialty()
+            // NOTE for Damien: setSpecialty() needed to store specialty here
+            Doctor* newDoctor = new Doctor(id, name, email, specialty);
             system.registerUser(newDoctor);
 
             cout << endl << "Doctor registered successfully!" << endl;
             newDoctor->DisplayUserInfo();
+            // activePatient stays nullptr — doctors don't request appointments
         }
 
         cout << "\nTotal users in system now: " << User::getTotalUsers() << endl;
@@ -124,15 +115,54 @@ int main() {
         cout << "Enter your full name: ";
         getline(cin, searchName);
 
-        // findUser() is our method on HealthcareSystem — searches the registered users by name.
         User* found = system.findUser(searchName);
 
         if (found != nullptr) {
             cout << endl << "User found!" << endl;
-            found->Login();           // Login() — prompts for ID and validates it
-            found->DisplayUserInfo(); // DisplayUserInfo() — prints ID, name, email
+            found->Login(); // Zach's Login() — prompts for ID and validates
+
+            // Ask role so we know whether to treat them as Patient or Doctor
+            int role;
+            cout << "Are you a:" << endl;
+            cout << "1. Patient" << endl;
+            cout << "2. Doctor" << endl;
+            cout << "Enter choice: ";
+            cin >> role;
+
+            found->DisplayUserInfo();
+
+            if (role == 1) {
+                // static_cast is safe here because we trust the user knows their own role
+                // (dynamic_cast would be safer but requires virtual functions on User)
+                activePatient = static_cast<Patient*>(found);
+            }
+            // role == 2 (Doctor) will be used in Step 4 — approve appointment
         } else {
             cout << "No user found with that name." << endl;
+        }
+    }
+
+    // ------------------------------------------------------------------
+    // STEP 2: Patient requests appointment
+    // Works for both the pre-seeded Alice and any newly registered patient.
+    // The call goes: activePatient->requestAppointment()
+    //             → Patient.cpp calls system.scheduleAppointment(patient, doctor)
+    //             → HealthcareSystem creates and stores the Appointment object
+    // ------------------------------------------------------------------
+
+    if (activePatient != nullptr) {
+        int apptChoice;
+        cout << endl << "Would you like to request an appointment?" << endl;
+        cout << "1. Yes" << endl;
+        cout << "2. No" << endl;
+        cout << "Enter choice: ";
+        cin >> apptChoice;
+
+        if (apptChoice == 1) {
+            // Use the pre-seeded Dr. Smith for the appointment.
+            // Tochi's requestAppointment() calls system.scheduleAppointment(patient, doctor),
+            // which is where HealthcareSystem takes over and creates the Appointment.
+            activePatient->requestAppointment(system, seedDoctor);
         }
     }
 
