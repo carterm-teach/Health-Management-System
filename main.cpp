@@ -67,11 +67,9 @@ int main() {
         cout << endl;
 
         // Collect info common to both Patient and Doctor
-        int id;
+        // ID is auto-assigned based on how many users already exist in the system
+        int id = User::getTotalUsers() + 1;
         string name, email;
-
-        cout << "Enter your ID number: ";
-        cin >> id;
 
         cin.ignore();
 
@@ -110,7 +108,7 @@ int main() {
             Doctor* newDoctor = new Doctor();
             newDoctor->setuserId(id);
             newDoctor->setname(name);
-            newDoctor->setemail(email);
+            newDoctor->setemail(email); // specialty can't be set until Damien adds setSpecialty()
             system.registerUser(newDoctor);
 
             cout << endl << "Doctor registered successfully!" << endl;
