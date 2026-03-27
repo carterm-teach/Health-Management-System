@@ -119,7 +119,7 @@ int main() {
 
         if (found != nullptr) {
             cout << endl << "User found!" << endl;
-            found->Login(); // Zach's Login() — prompts for ID and validates
+            found->Login(); // Login() — prompts for ID and validates
 
             // Ask role so we know whether to treat them as Patient or Doctor
             int role;
