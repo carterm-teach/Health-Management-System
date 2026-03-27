@@ -1,5 +1,7 @@
 #include "HealthcareSystem.h"
 #include "User.h"
+#include "Patient.h"
+#include "Doctor.h"
 #include "Appointment.h"
 #include "MedicalRecord.h"
 #include <iostream>
@@ -41,12 +43,38 @@ cout << "Total Appointments: " << appointments.size() << endl;
 cout << "Total Medical Records: " << records.size() << endl;
 }
 void HealthcareSystem::scheduleAppointment(Patient* patient, Doctor* doctor) {
-    // Full implementation comes in Step 2 (HealthcareSystem creates Appointment)
-    cout << "Appointment request received. Pending scheduling." << endl;
+    // STEP 2 & 3: Patient requests appointment → HealthcareSystem creates Appointment
+    // Collect the preferred date/time from the user
+    string dateTime;
+    cout << "Enter preferred date and time (e.g. 2026-04-15 10:00AM): ";
+    cin.ignore();
+    getline(cin, dateTime);
+
+    // Auto-assign appointment ID based on how many appointments already exist
+    int apptId = appointments.size() + 1;
+
+    // Create the Appointment using Landon's class — status starts as "Pending" automatically
+    Appointment* newAppt = new Appointment(apptId, patient, doctor, dateTime);
+    appointments.push_back(newAppt);
+
+    cout << "\nAppointment requested successfully!" << endl;
+    cout << "Appointment ID : " << newAppt->getAppointmentID() << endl;
+    cout << "Patient        : " << patient->getname() << endl;
+    cout << "Doctor         : " << doctor->getname() << endl;
+    cout << "Date/Time      : " << newAppt->getDateTime() << endl;
+    cout << "Status         : " << newAppt->getStatus() << endl;
 }
 User* HealthcareSystem::findUser(const string& name) const {
 for (User* user : users) {
     if (user->getname() == name) {
+        return user;
+    }
+}
+return nullptr;
+}
+User* HealthcareSystem::findUserById(int id) const {
+for (User* user : users) {
+    if (user->getuserID() == id) {
         return user;
     }
 }

@@ -22,5 +22,6 @@ void addMedicalRecord(MedicalRecord* record);
 void manageSystemOperations();
 void generateReport() const;
 User* findUser(const std::string& name) const;
+User* findUserById(int id) const;
 };
 #endif
