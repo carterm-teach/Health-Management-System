@@ -1,22 +1,37 @@
-// STUB - Placeholder until Taelon's full Billing implementation is ready.
-// Do not modify this file — replace it entirely with Billing.h from Taelon.
-// The 'amount' and 'status' fields must remain with these exact names and types
-// because Insurance::AdjustBilling() accesses them directly as a friend class.
 #ifndef BILLING_H
 #define BILLING_H
-
 #include <string>
-
-class Insurance;
-
-class Billing {
-    friend class Insurance; // Insurance must directly access private members per the spec
+#include <iostream>
+using namespace std;
+class Billing
+{
 private:
-    double amount;
-    std::string status;
+int billID; // Bill identification number
+string patient; // Patient name
+double amount; // Total bill amount
+string status; // Payment status
+// Private helper function to initialize a bill
+void initializeBill(int id, string patientName, double billAmount, string billStatus)
+{
+billID = id;
+patient = patientName;
+amount = billAmount;
+status = billStatus;
+}
 public:
-    Billing() : amount(0.0), status("Unpaid") {}
-    Billing(double amt) : amount(amt), status("Unpaid") {}
+// Default Constructor
+Billing();
+// Parameterized Constructor
+Billing(int billID, string patient, double amount, string status);
+// Copy Constructor
+Billing(const Billing &other);
+// Destructor
+~Billing();
+// Member Functions
+void generateBill(int id, string patientName, double billAmount);
+void processPayment(double payment);
+void adjustCharges(double adjustment);
+// Display Function
+void displayBill() const;
 };
-
 #endif
