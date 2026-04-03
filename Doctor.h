@@ -4,7 +4,6 @@
 #include <string>
 #include <vector>
 #include "User.h"
-#include "Doctor.h"
 
 class Appointment;
 class MedicalRecord;
@@ -13,7 +12,6 @@ class Patient;
 
 class Doctor : public User {
 private:
-    std::string name;
     std::string specialty;
     std::vector<Appointment*> schedule;
 
@@ -36,6 +34,8 @@ public:
     Prescription issuePrescription(Patient& patient,
         const std::string& medication,
         const std::string& dosage);
+
+    void setSpecialty(const std::string& newSpecialty);
 
     void displayInfo() const;
 };
