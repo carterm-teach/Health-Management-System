@@ -1,4 +1,8 @@
 #include "Doctor.h"
+#include "Appointment.h"
+#include "MedicalRecord.h"
+#include "Prescription.h"
+#include "Patient.h"
 #include <iostream>
 #include "User.h"
 
@@ -48,6 +52,10 @@ MedicalRecord Doctor::createMedicalRecord(Patient& patient,
     return MedicalRecord(patient, diagnosis, notes);
 }
 
+void Doctor::setSpecialty(const std::string& newSpecialty) {
+    specialty = newSpecialty;
+}
+
 Prescription Doctor::issuePrescription(Patient& patient,
     const std::string& medication,
     const std::string& dosage) {
@@ -55,9 +63,10 @@ Prescription Doctor::issuePrescription(Patient& patient,
 }
 
 void Doctor::displayInfo() const {
-    std::cout << "Doctor Name: " << name << "\n"
+    std::cout << "Doctor Informtion:\n"
         << "Specialty: " << specialty << "\n"
-        << "Email: " << email << "\n";
+        << "Email: " << getEmail() << "\n"
+        << "Name: " << getName() << "\n";
 }
 
 // int main() {
