@@ -4,6 +4,9 @@
 #include <string>
 #include <vector>
 #include "User.h"
+#include "Appointment.h"
+#include "MedicalRecord.h"
+#include "Prescription.h"
 
 class Appointment;
 class MedicalRecord;
