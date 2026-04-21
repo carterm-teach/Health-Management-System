@@ -80,3 +80,4 @@ cout << "Amount: $" << amount << endl;
 cout << "Status: " << status << endl;
 cout << "------------------------" << endl;
 return;
+}

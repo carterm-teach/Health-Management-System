@@ -5,6 +5,7 @@
 using namespace std;
 class Billing
 {
+friend class Insurance;
 private:
 int billID; // Bill identification number
 string patient; // Patient name
