@@ -6,18 +6,6 @@
 #include <iostream>
 #include "User.h"
 
-// Dummy class definitions (for standalone compilation)
-class Appointment {};
-class Patient {};
-class MedicalRecord {
-public:
-    MedicalRecord(Patient&, const std::string&, const std::string&) {}
-};
-class Prescription {
-public:
-    Prescription(Patient&, const std::string&, const std::string&) {}
-};
-
 // Default constructor
 Doctor::Doctor()
     : User(), specialty("") {
