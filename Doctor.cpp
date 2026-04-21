@@ -59,7 +59,7 @@ void Doctor::setSpecialty(const std::string& newSpecialty) {
 
 void Doctor::displayInfo() const {
     std::cout << "Doctor Information:\n"
-        << "Name: " << getName() << "\n"
-        << "Email: " << getEmail() << "\n"
+        << "Name: " << getname() << "\n"
+        << "Email: " << getemail() << "\n"
         << "Specialty: " << specialty << "\n";
 }
