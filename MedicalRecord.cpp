@@ -13,12 +13,14 @@ using namespace std;
 
 MedicalRecord::MedicalRecord(){
     recordID = 0;
+    patient = nullptr;
+    doctor = nullptr;
     diagnosis = "";
     notes = "";
     date = "";
 }
 
-MedicalRecord::MedicalRecord(int id, Patient p, Doctor doc, string dt){
+MedicalRecord::MedicalRecord(int id, Patient* p, Doctor* doc, string dt){
     recordID = id;
     patient = p;
     doctor = doc;
@@ -56,8 +58,8 @@ void MedicalRecord::displayRecord(){
     cout << "-----------------------\n";
     cout << "# " << recordID;
     cout << "\n" << date;
-    cout << "\nPatient: " << patient.name;
-    cout << "\nDoctor: " << doctor.name;
+    cout << "\nPatient: " << (patient ? patient->name : "N/A");
+    cout << "\nDoctor: " << (doctor ? doctor->name : "N/A");
     cout << "\nDiagnosis: " << diagnosis;
     cout << "\nNotes: " << notes;
     cout << "\n-----------------------\n";
