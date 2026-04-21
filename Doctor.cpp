@@ -39,13 +39,18 @@ void Doctor::denyAppointment(Appointment& appointment) {
 MedicalRecord Doctor::createMedicalRecord(Patient& patient,
     const std::string& diagnosis,
     const std::string& notes) {
-    return MedicalRecord(patient, diagnosis, notes);
+    static int recID = 1;
+    MedicalRecord rec(recID++, &patient, this, "");
+    rec.setDiagnosis(diagnosis);
+    rec.setNotes(notes);
+    return rec;
 }
 
 Prescription Doctor::issuePrescription(Patient& patient,
     const std::string& medication,
     const std::string& dosage) {
-    return Prescription(patient, medication, dosage);
+    static int presID = 1;
+    return Prescription(presID++, &patient, this, medication, dosage);
 }
 
 void Doctor::setSpecialty(const std::string& newSpecialty) {
