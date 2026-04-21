@@ -23,5 +23,6 @@ void manageSystemOperations();
 void generateReport() const;
 User* findUser(const std::string& name) const;
 User* findUserById(int id) const;
+const std::vector<Appointment*>& getAppointments() const;
 };
 #endif

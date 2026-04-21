@@ -72,6 +72,9 @@ for (User* user : users) {
 }
 return nullptr;
 }
+const vector<Appointment*>& HealthcareSystem::getAppointments() const {
+return appointments;
+}
 User* HealthcareSystem::findUserById(int id) const {
 for (User* user : users) {
     if (user->getuserID() == id) {
