@@ -25,7 +25,7 @@ int main() {
     Doctor*  seedDoctor  = new Doctor(2, "Dr. Smith", "drsmith@email.com", "Cardiology");
 
     system.registerUser(seedPatient);
-    system.registerUser(seedDoctor);
+    system.registerDoctor(seedDoctor);
 
     cout << "Pre-seeded 1 Patient and 1 Doctor." << endl;
     cout << "Total users created so far: " << User::getTotalUsers() << endl << endl;
@@ -103,7 +103,7 @@ int main() {
                 getline(cin, specialty);
 
                 Doctor* newDoctor = new Doctor(id, name, email, specialty);
-                system.registerUser(newDoctor);
+                system.registerDoctor(newDoctor);
 
                 cout << endl << "Doctor registered successfully!" << endl;
                 newDoctor->DisplayUserInfo();
@@ -167,10 +167,28 @@ int main() {
                 if (pc == 1) {
                     // STEP 2: Patient requests appointment
                     // STEP 3: HealthcareSystem creates it (conflict check is inside)
-                    activePatient->requestAppointment(system, seedDoctor);
-                    notif.sendAppointmentReminder(
-                        activePatient->getname(), seedDoctor->getname(), "See system for date/time"
-                    );
+                    const vector<Doctor*>& availableDoctors = system.getDoctors();
+                    if (availableDoctors.empty()) {
+                        cout << "No doctors available in the system.\n";
+                    } else {
+                        cout << "\nAvailable Doctors:" << endl;
+                        for (int i = 0; i < (int)availableDoctors.size(); i++) {
+                            cout << i + 1 << ". " << availableDoctors[i]->getname()
+                                 << " (ID: " << availableDoctors[i]->getuserID() << ")" << endl;
+                        }
+                        cout << "Select a doctor (1-" << availableDoctors.size() << "): ";
+                        int docChoice; cin >> docChoice;
+
+                        if (docChoice >= 1 && docChoice <= (int)availableDoctors.size()) {
+                            Doctor* chosenDoctor = availableDoctors[docChoice - 1];
+                            activePatient->requestAppointment(system, chosenDoctor);
+                            notif.sendAppointmentReminder(
+                                activePatient->getname(), chosenDoctor->getname(), "See system for date/time"
+                            );
+                        } else {
+                            cout << "Invalid selection.\n";
+                        }
+                    }
                 } else if (pc == 2) {
                     cout << "\n--- Medical History for " << activePatient->getname() << " ---" << endl;
                     activePatient->viewMedicalHistory();
