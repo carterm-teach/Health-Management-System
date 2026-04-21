@@ -43,21 +43,35 @@ cout << "Total Appointments: " << appointments.size() << endl;
 cout << "Total Medical Records: " << records.size() << endl;
 }
 void HealthcareSystem::scheduleAppointment(Patient* patient, Doctor* doctor) {
-    // STEP 2 & 3: Patient requests appointment → HealthcareSystem creates Appointment
-    // Collect the preferred date/time from the user
     string dateTime;
-    cout << "Enter preferred date and time (e.g. 2026-04-15 10:00AM): ";
+    cout << "Enter preferred date and time (e.g. 2026-04-25 10:00AM): ";
     cin.ignore();
     getline(cin, dateTime);
 
-    // Auto-assign appointment ID based on how many appointments already exist
     int apptId = appointments.size() + 1;
-
-    // Create the Appointment using Landon's class — status starts as "Pending" automatically
     Appointment* newAppt = new Appointment(apptId, patient, doctor, dateTime);
-    appointments.push_back(newAppt);
 
-    cout << "\nAppointment requested successfully!" << endl;
+    // STEP 5: Compare new appointment against all existing ones using operator<
+    // If neither is earlier than the other, they share the same time slot — conflict.
+    cout << "\nChecking for scheduling conflicts..." << endl;
+    bool conflict = false;
+    for (Appointment* existing : appointments) {
+        if (!(*existing < *newAppt) && !(*newAppt < *existing)) {
+            cout << "CONFLICT: time slot already taken by Appointment #"
+                 << existing->getAppointmentID()
+                 << " (" << existing->getDateTime() << ")." << endl;
+            conflict = true;
+        }
+    }
+
+    if (conflict) {
+        cout << "Appointment NOT scheduled — please choose a different time." << endl;
+        delete newAppt;
+        return;
+    }
+
+    appointments.push_back(newAppt);
+    cout << "\nNo conflicts found. Appointment scheduled!" << endl;
     cout << "Appointment ID : " << newAppt->getAppointmentID() << endl;
     cout << "Patient        : " << patient->getname() << endl;
     cout << "Doctor         : " << doctor->getname() << endl;
