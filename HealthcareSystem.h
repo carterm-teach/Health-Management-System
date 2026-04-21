@@ -10,12 +10,14 @@ class MedicalRecord;
 class HealthcareSystem {
 private:
 std::vector<User*> users;
+std::vector<Doctor*> doctors;
 std::vector<Appointment*> appointments;
 std::vector<MedicalRecord*> records;
 public:
 HealthcareSystem(); // constructor
 ~HealthcareSystem(); // destructor
 void registerUser(User* user);
+void registerDoctor(Doctor* doctor); // registers in both users and doctors
 void scheduleAppointment(Appointment* appointment);
 void scheduleAppointment(Patient* patient, Doctor* doctor); // called by Patient::requestAppointment
 void addMedicalRecord(MedicalRecord* record);
@@ -24,5 +26,6 @@ void generateReport() const;
 User* findUser(const std::string& name) const;
 User* findUserById(int id) const;
 const std::vector<Appointment*>& getAppointments() const;
+const std::vector<Doctor*>& getDoctors() const;
 };
 #endif

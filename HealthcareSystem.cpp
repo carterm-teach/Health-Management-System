@@ -25,6 +25,14 @@ void HealthcareSystem::registerUser(User* user) {
 users.push_back(user);
 cout << "User registered." << endl;
 }
+void HealthcareSystem::registerDoctor(Doctor* doctor) {
+users.push_back(doctor);
+doctors.push_back(doctor);
+cout << "Doctor registered." << endl;
+}
+const vector<Doctor*>& HealthcareSystem::getDoctors() const {
+return doctors;
+}
 void HealthcareSystem::scheduleAppointment(Appointment* appointment) {
 appointments.push_back(appointment);
 cout << "Appointment scheduled." << endl;
