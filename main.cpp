@@ -18,6 +18,7 @@ int main() {
 
     // ------------------------------------------------------------------
     // STEP 1: Create Patient and Doctor objects (update static counters)
+    // Each constructor chains to User(), incrementing User::totalUsers.
     // ------------------------------------------------------------------
     Insurance* seedInsurance = new Insurance("BlueCross", "BC-001", 80.0);
     Patient* seedPatient = new Patient(1, "Alice Johnson", "alice@email.com", seedInsurance);
@@ -29,12 +30,11 @@ int main() {
     cout << "Pre-seeded 1 Patient and 1 Doctor." << endl;
     cout << "Total users created so far: " << User::getTotalUsers() << endl << endl;
 
-    // Pre-seed a confirmed appointment so Step 5 has something to compare against
-    Patient* bob = new Patient(3, "Bob Williams", "bob@email.com", nullptr);
-    system.registerUser(bob);
-    Appointment* bobAppt = new Appointment(1, bob, seedDoctor, "2026-04-25 09:00AM");
-    bobAppt->confirmAppointment();
-    system.scheduleAppointment(bobAppt);
+    // Pre-seed one existing confirmed appointment so the conflict check (Step 5)
+    // inside scheduleAppointment has something to compare the new booking against.
+    Appointment* existingAppt = new Appointment(1, seedPatient, seedDoctor, "2026-04-25 09:00AM");
+    existingAppt->confirmAppointment();
+    system.scheduleAppointment(existingAppt);
 
     // ------------------------------------------------------------------
     // Main session loop
@@ -43,19 +43,19 @@ int main() {
     while (running) {
 
         Patient* activePatient = nullptr;
+        Doctor*  activeDoctor  = nullptr;
 
         int choice;
-        cout << "Welcome to the Healthcare Management System" << endl;
+        cout << "\nWelcome to the Healthcare Management System" << endl;
         cout << "1. I am a new user" << endl;
         cout << "2. I am a returning user" << endl;
-        cout << "3. Login as Doctor" << endl;
-        cout << "4. Exit" << endl;
+        cout << "3. Exit" << endl;
         cout << "Enter choice: ";
         cin >> choice;
         cout << endl;
 
         // --------------------------------------------------------------
-        // NEW USER
+        // NEW USER — register as Patient or Doctor
         // --------------------------------------------------------------
         if (choice == 1) {
             int userType;
@@ -92,6 +92,7 @@ int main() {
 
                 cout << endl << "Patient registered successfully!" << endl;
                 newPatient->DisplayUserInfo();
+                cout << "Total users in system now: " << User::getTotalUsers() << endl;
 
                 activePatient = newPatient;
 
@@ -106,12 +107,13 @@ int main() {
 
                 cout << endl << "Doctor registered successfully!" << endl;
                 newDoctor->DisplayUserInfo();
+                cout << "Total users in system now: " << User::getTotalUsers() << endl;
+
+                activeDoctor = newDoctor;
             }
 
-            cout << "\nTotal users in system now: " << User::getTotalUsers() << endl;
-
         // --------------------------------------------------------------
-        // RETURNING USER (Patient)
+        // RETURNING USER — login then route to Patient or Doctor session
         // --------------------------------------------------------------
         } else if (choice == 2) {
             string searchName;
@@ -120,48 +122,78 @@ int main() {
             getline(cin, searchName);
 
             User* found = system.findUser(searchName);
-            if (found != nullptr) {
-                cout << endl << "User found!" << endl;
-                found->Login();
-
-                int role;
-                cout << "Are you a:" << endl;
-                cout << "1. Patient" << endl;
-                cout << "2. Doctor" << endl;
-                cout << "Enter choice: ";
-                cin >> role;
-
-                found->DisplayUserInfo();
-
-                if (role == 1) {
-                    activePatient = static_cast<Patient*>(found);
-                }
-            } else {
+            if (found == nullptr) {
                 cout << "No user found with that name." << endl;
+                continue;
             }
 
-        // --------------------------------------------------------------
-        // DOCTOR SESSION — Steps 4, 5, 6
-        // --------------------------------------------------------------
-        } else if (choice == 3) {
-            string searchName;
-            cin.ignore();
-            cout << "Enter your full name: ";
-            getline(cin, searchName);
-
-            User* found = system.findUser(searchName);
-            if (!found) { cout << "No user found with that name.\n"; continue; }
-
+            cout << endl << "User found!" << endl;
             found->Login();
-            Doctor* d = static_cast<Doctor*>(found);
 
+            int role;
+            cout << "Are you a:" << endl;
+            cout << "1. Patient" << endl;
+            cout << "2. Doctor" << endl;
+            cout << "Enter choice: ";
+            cin >> role;
+
+            found->DisplayUserInfo();
+
+            if (role == 1) {
+                activePatient = static_cast<Patient*>(found);
+            } else if (role == 2) {
+                activeDoctor = static_cast<Doctor*>(found);
+            }
+
+        } else if (choice == 3) {
+            running = false;
+            continue;
+        }
+
+        // --------------------------------------------------------------
+        // PATIENT SESSION — Steps 2 & 3
+        // Runs whether the patient just registered or logged in.
+        // --------------------------------------------------------------
+        if (activePatient != nullptr) {
+            bool patientSession = true;
+            while (patientSession) {
+                cout << "\n--- Patient Menu ---" << endl;
+                cout << "1. Request Appointment" << endl;
+                cout << "2. View Medical History" << endl;
+                cout << "3. Logout" << endl;
+                cout << "Enter choice: ";
+                int pc; cin >> pc;
+
+                if (pc == 1) {
+                    // STEP 2: Patient requests appointment
+                    // STEP 3: HealthcareSystem creates it (conflict check is inside)
+                    activePatient->requestAppointment(system, seedDoctor);
+                    notif.sendAppointmentReminder(
+                        activePatient->getname(), seedDoctor->getname(), "See system for date/time"
+                    );
+                } else if (pc == 2) {
+                    cout << "\n--- Medical History for " << activePatient->getname() << " ---" << endl;
+                    activePatient->viewMedicalHistory();
+                } else if (pc == 3) {
+                    cout << "\n" << activePatient->getname() << " logged out." << endl;
+                    activePatient->Logout();
+                    patientSession = false;
+                }
+            }
+        }
+
+        // --------------------------------------------------------------
+        // DOCTOR SESSION — Steps 4 & 6
+        // Runs whether the doctor just registered or logged in.
+        // (Step 5 already ran automatically inside scheduleAppointment)
+        // --------------------------------------------------------------
+        if (activeDoctor != nullptr) {
             bool doctorSession = true;
             while (doctorSession) {
                 cout << "\n--- Doctor Menu ---" << endl;
                 cout << "1. Approve pending appointment" << endl;
-                cout << "2. Compare appointments (conflict check)" << endl;
-                cout << "3. Create Medical Record" << endl;
-                cout << "4. Logout" << endl;
+                cout << "2. Create Medical Record" << endl;
+                cout << "3. Logout" << endl;
                 cout << "Enter choice: ";
                 int dc; cin >> dc;
 
@@ -176,7 +208,7 @@ int main() {
                             cout << "Approve? (y/n): ";
                             char c; cin >> c;
                             if (c == 'y' || c == 'Y') {
-                                d->approveAppointment(*appt);
+                                activeDoctor->approveAppointment(*appt);
                                 appt->confirmAppointment();
                                 notif.sendConfirmation(
                                     "Appointment #" + to_string(appt->getAppointmentID()) + " confirmed."
@@ -189,35 +221,6 @@ int main() {
                     if (!found_appt) cout << "No pending appointments.\n";
 
                 } else if (dc == 2) {
-                    // STEP 5: Compare appointments using operator< to check for conflicts
-                    const vector<Appointment*>& appts = system.getAppointments();
-                    if ((int)appts.size() < 2) {
-                        cout << "Need at least 2 appointments to compare.\n";
-                        continue;
-                    }
-                    cout << "\n=== Appointment Conflict Check ===" << endl;
-                    bool conflict = false;
-                    for (int i = 0; i < (int)appts.size(); i++) {
-                        for (int j = i + 1; j < (int)appts.size(); j++) {
-                            cout << "Appt #" << appts[i]->getAppointmentID()
-                                 << " (" << appts[i]->getDateTime() << ")"
-                                 << " vs Appt #" << appts[j]->getAppointmentID()
-                                 << " (" << appts[j]->getDateTime() << "): ";
-                            if (*appts[i] < *appts[j]) {
-                                cout << "Appt #" << appts[i]->getAppointmentID()
-                                     << " is earlier — no conflict." << endl;
-                            } else if (*appts[j] < *appts[i]) {
-                                cout << "Appt #" << appts[j]->getAppointmentID()
-                                     << " is earlier — no conflict." << endl;
-                            } else {
-                                cout << "CONFLICT — same time slot!" << endl;
-                                conflict = true;
-                            }
-                        }
-                    }
-                    if (!conflict) cout << "All appointments clear of conflicts." << endl;
-
-                } else if (dc == 3) {
                     // STEP 6: Doctor creates MedicalRecord after visit
                     cout << "Enter Patient ID: ";
                     int pid; cin >> pid;
@@ -232,46 +235,18 @@ int main() {
                     cout << "Enter notes: ";
                     getline(cin, notes);
 
-                    MedicalRecord rec = d->createMedicalRecord(*pat, diagnosis, notes);
+                    MedicalRecord rec = activeDoctor->createMedicalRecord(*pat, diagnosis, notes);
                     pat->addMedicalRecord(rec);
                     system.addMedicalRecord(new MedicalRecord(rec));
                     rec.displayRecord();
                     notif.sendConfirmation("Medical record created for " + pat->getname() + ".");
 
-                } else if (dc == 4) {
-                    cout << "\n" << d->getname() << " logged out." << endl;
-                    d->Logout();
+                } else if (dc == 3) {
+                    cout << "\n" << activeDoctor->getname() << " logged out." << endl;
+                    activeDoctor->Logout();
                     doctorSession = false;
                 }
             }
-            continue; // skip patient appointment block below
-
-        } else if (choice == 4) {
-            running = false;
-            continue;
-        }
-
-        // --------------------------------------------------------------
-        // STEP 2 & 3: Patient requests appointment
-        // (runs after new-user or returning-user patient login)
-        // --------------------------------------------------------------
-        if (activePatient != nullptr) {
-            int apptChoice;
-            cout << endl << "Would you like to request an appointment?" << endl;
-            cout << "1. Yes" << endl;
-            cout << "2. No" << endl;
-            cout << "Enter choice: ";
-            cin >> apptChoice;
-
-            if (apptChoice == 1) {
-                activePatient->requestAppointment(system, seedDoctor);
-                notif.sendAppointmentReminder(
-                    activePatient->getname(), seedDoctor->getname(), "See system for date/time"
-                );
-            }
-
-            cout << "\n" << activePatient->getname() << " logged out." << endl;
-            activePatient->Logout();
         }
     }
 
