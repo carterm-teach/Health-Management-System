@@ -8,9 +8,6 @@
 #include "MedicalRecord.h"
 #include "Prescription.h"
 
-class Appointment;
-class MedicalRecord;
-class Prescription;
 class Patient;
 
 class Doctor : public User {
@@ -24,6 +21,7 @@ public:
         const std::string& name,
         const std::string& email,
         const std::string& specialty);
+
     Doctor(const Doctor& other);
     ~Doctor();
 

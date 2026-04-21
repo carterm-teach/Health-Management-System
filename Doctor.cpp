@@ -6,6 +6,7 @@
 #include <iostream>
 #include "User.h"
 
+// Dummy class definitions (for standalone compilation)
 class Appointment {};
 class Patient {};
 class MedicalRecord {
@@ -17,24 +18,25 @@ public:
     Prescription(Patient&, const std::string&, const std::string&) {}
 };
 
+// Default constructor
 Doctor::Doctor()
-    : User(), name(""), specialty("") {
+    : User(), specialty("") {
 }
 
+// Main constructor — FIXED
 Doctor::Doctor(int userID,
     const std::string& name,
     const std::string& email,
     const std::string& specialty)
-    : User(userID, name, email), name(name), specialty(specialty) {
+    : User(userID, name, email), specialty(specialty) {
 }
 
+// Copy constructor — FIXED
 Doctor::Doctor(const Doctor& other)
-    : User(other.userID, other.name, other.email),
-    name(other.name),
-    specialty(other.specialty),
-    schedule(other.schedule) {
+    : User(other), specialty(other.specialty), schedule(other.schedule) {
 }
 
+// Destructor
 Doctor::~Doctor() {}
 
 bool Doctor::approveAppointment(Appointment& appointment) {
@@ -52,25 +54,19 @@ MedicalRecord Doctor::createMedicalRecord(Patient& patient,
     return MedicalRecord(patient, diagnosis, notes);
 }
 
-void Doctor::setSpecialty(const std::string& newSpecialty) {
-    specialty = newSpecialty;
-}
-
 Prescription Doctor::issuePrescription(Patient& patient,
     const std::string& medication,
     const std::string& dosage) {
     return Prescription(patient, medication, dosage);
 }
 
-void Doctor::displayInfo() const {
-    std::cout << "Doctor Informtion:\n"
-        << "Specialty: " << specialty << "\n"
-        << "Email: " << getEmail() << "\n"
-        << "Name: " << getName() << "\n";
+void Doctor::setSpecialty(const std::string& newSpecialty) {
+    specialty = newSpecialty;
 }
 
-// int main() {
-//     Doctor d("D001", "Dr. Burkins", "drBurkins@email.com", "Cardiology");
-//     d.displayInfo();
-//     return 0;
-// }
+void Doctor::displayInfo() const {
+    std::cout << "Doctor Information:\n"
+        << "Name: " << getName() << "\n"
+        << "Email: " << getEmail() << "\n"
+        << "Specialty: " << specialty << "\n";
+}
