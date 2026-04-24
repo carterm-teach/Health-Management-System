@@ -1,4 +1,7 @@
 #include "NotifService.h"
+#include "Appoinment.h"
+#include "Billing.h"
+#include "Patient.h"
 #include <iomanip>
 int NotifService::notificationsSent = 0;
 NotifService::NotifService()
