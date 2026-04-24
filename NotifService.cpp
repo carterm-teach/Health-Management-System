@@ -8,21 +8,21 @@ NotifService::NotifService()
 {
 cout << "NotifService started." << endl;
 }
-void NotifService::sendAppointmentReminder(const string& patientName, const string& doctorName, const string& appointmentDateTime)
+void NotifService::sendAppointmentReminder(const Appointment& appt)
 {
 cout << "\n========== APPOINTMENT REMINDER ==========" << endl;
-cout << "Patient: " << patientName << endl;
-cout << "Doctor: " << doctorName << endl;
-cout << "Date/Time: " << appointmentDateTime << endl;
+cout << "Appoinment ID: " << appt.getAppoinmentID() << endl;
+cout << "Date/Time: " << appt.getDateTime() << endl;
+cout << "Status: " << appt.getStatus() << endl;
 cout << "Reminder notification sent." << endl;
 notificationsSent++;
 }
-void NotifService::sendBillingNotification(const string& patientName, double amountDue, const string& billStatus)
+void NotifService::sendBillingNotification(const Billing& bill)
 {
 cout << "\n========== BILLING NOTIFICATION ==========" << endl;
-cout << "Patient: " << patientName << endl;
-cout << "Amount Due: $" << fixed << setprecision(2) << amountDue << endl;
-cout << "Status: " << billStatus << endl;
+cout << "Bill ID: " << bill.getBillID() << endl;
+cout << "Amount Due: $" << bill.getAmount() << endl;
+cout << "Status: " << bill.getStatus << endl;
 cout << "Billing notification sent." << endl;
 notificationsSent++;
 }
