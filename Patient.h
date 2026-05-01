@@ -20,5 +20,6 @@ Patient(const Patient& other);
 void requestAppointment(HealthcareSystem& system, Doctor* doctor);
 void viewMedicalHistory();
 void addMedicalRecord(const MedicalRecord& record);
+Insurance* getInsurance() const;
 };
 #endif

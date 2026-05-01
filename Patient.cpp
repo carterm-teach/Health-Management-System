@@ -36,3 +36,6 @@ record->displayRecord();
 void Patient::addMedicalRecord(const MedicalRecord& record) {
 medicalHistory.push_back(new MedicalRecord(record));
 }
+Insurance* Patient::getInsurance() const {
+return insurance;
+}
