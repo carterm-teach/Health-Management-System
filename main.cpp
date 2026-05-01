@@ -7,6 +7,8 @@
 #include "Insurance.h"
 #include "Appointment.h"
 #include "MedicalRecord.h"
+#include "Prescription.h"
+#include "Billing.h"
 #include "NotifService.h"
 using namespace std;
 
@@ -254,10 +256,52 @@ int main() {
                     getline(cin, notes);
 
                     MedicalRecord rec = activeDoctor->createMedicalRecord(*pat, diagnosis, notes);
+                    // STEP 7: MedicalRecord added to Patient history
                     pat->addMedicalRecord(rec);
                     system.addMedicalRecord(new MedicalRecord(rec));
                     rec.displayRecord();
                     notif.sendConfirmation("Medical record created for " + pat->getname() + ".");
+
+                    // STEP 8: Doctor issues Prescription
+                    string medication, dosage;
+                    cout << "Enter medication: ";
+                    getline(cin, medication);
+                    cout << "Enter dosage: ";
+                    getline(cin, dosage);
+                    Prescription rx = activeDoctor->issuePrescription(*pat, medication, dosage);
+                    rx.displayDetails();
+                    notif.sendConfirmation("Prescription issued for " + pat->getname() + ".");
+
+                    // STEP 9: Create Billing for the visit
+                    static int billCounter = 1;
+                    double visitFee;
+                    cout << "Enter visit fee: $";
+                    cin >> visitFee;
+                    Billing visitBill(billCounter++, pat->getname(), visitFee, "Unpaid");
+                    visitBill.displayBill();
+
+                    // STEP 10: Insurance adjusts billing
+                    Insurance* ins = pat->getInsurance();
+                    if (ins != nullptr) {
+                        cout << "\nApplying insurance coverage..." << endl;
+                        ins->AdjustBilling(visitBill);
+                        visitBill.displayBill();
+                        notif.sendConfirmation("Insurance applied to bill for " + pat->getname() + ".");
+                    }
+
+                    // STEP 11: Create prescription fee bill and combine with operator+
+                    double rxFee;
+                    cout << "Enter prescription fee: $";
+                    cin >> rxFee;
+                    Billing rxBill(billCounter++, pat->getname(), rxFee, "Unpaid");
+                    Billing combinedBill = visitBill + rxBill;
+                    cout << "\nCombined bill (visit + prescription):" << endl;
+                    combinedBill.displayBill();
+                    notif.sendBillingNotification(pat->getname(), (double)combinedBill, "Unpaid");
+
+                    // STEP 12: Convert billing to numeric for reporting
+                    double totalDue = (double)combinedBill;
+                    cout << "Total amount due (numeric): $" << totalDue << endl;
 
                 } else if (dc == 3) {
                     cout << "\n" << activeDoctor->getname() << " logged out." << endl;
