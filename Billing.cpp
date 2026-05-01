@@ -70,6 +70,17 @@ amount += adjustment;
 cout << "Charges adjusted. New amount: $" << amount << endl;
 }
 
+// Combine two bills — returns a new bill with summed amounts
+Billing Billing::operator+(const Billing& other) const
+{
+static int combinedID = 1000;
+return Billing(combinedID++, patient + " & " + other.patient, amount + other.amount, "Unpaid");
+}
+// Convert billing amount to double for numeric reporting
+Billing::operator double() const
+{
+return amount;
+}
 // Display bill details
 void Billing::displayBill() const
 {
