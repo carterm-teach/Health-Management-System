@@ -8,8 +8,8 @@ private:
 static int notificationsSent;
 public:
 NotifService();
-void sendAppointmentReminder(const string& patientName, const string& doctorName, const string& appointmentDateTime);
-void sendBillingNotification(const string& patientName, double amountDue, const string& billStatus);
+void sendAppointmentReminder(const Appointment& appt);
+void sendBillingNotification(const Billing& bill);
 void sendConfirmation(const string& message);
 static int getNotificationsSent();
 ~NotifService();
