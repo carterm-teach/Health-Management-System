@@ -21,7 +21,7 @@ void NotifService::sendBillingNotification(const Billing& bill)
 cout << "\n========== BILLING NOTIFICATION ==========" << endl;
 cout << "Bill ID: " << bill.getBillID() << endl;
 cout << "Amount Due: $" << bill.getAmount() << endl;
-cout << "Status: " << bill.getStatus << endl;
+cout << "Status: " << bill.getStatus() << endl;
 cout << "Billing notification sent." << endl;
 notificationsSent++;
 }
