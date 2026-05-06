@@ -1,7 +1,6 @@
 #include "NotifService.h"
-#include "Appoinment.h"
+#include "Appointment.h"
 #include "Billing.h"
-#include "Patient.h"
 #include <iomanip>
 int NotifService::notificationsSent = 0;
 NotifService::NotifService()
@@ -11,7 +10,7 @@ cout << "NotifService started." << endl;
 void NotifService::sendAppointmentReminder(const Appointment& appt)
 {
 cout << "\n========== APPOINTMENT REMINDER ==========" << endl;
-cout << "Appoinment ID: " << appt.getAppoinmentID() << endl;
+cout << "Appoinment ID: " << appt.getAppointmentID() << endl;
 cout << "Date/Time: " << appt.getDateTime() << endl;
 cout << "Status: " << appt.getStatus() << endl;
 cout << "Reminder notification sent." << endl;
