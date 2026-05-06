@@ -34,6 +34,11 @@ void processPayment(double payment);
 void adjustCharges(double adjustment);
 // Display Function
 void displayBill() const;
+//Getters
+int getBillID() const;
+double getAmount() const;
+string getStatus() const;
+string getPatient() const;
 // Combine two bills (Step 11: operator+)
 Billing operator+(const Billing& other) const;
 // Convert to numeric for reporting (Step 12: conversion operator)
