@@ -184,9 +184,11 @@ int main() {
                         if (docChoice >= 1 && docChoice <= (int)availableDoctors.size()) {
                             Doctor* chosenDoctor = availableDoctors[docChoice - 1];
                             activePatient->requestAppointment(system, chosenDoctor);
-                            notif.sendAppointmentReminder(
-                                activePatient->getname(), chosenDoctor->getname(), "See system for date/time"
-                            );
+                            // STEP 13: Notification — pass the appointment just created (last in list)
+                            const vector<Appointment*>& allAppts = system.getAppointments();
+                            if (!allAppts.empty()) {
+                                notif.sendAppointmentReminder(*allAppts.back());
+                            }
                         } else {
                             cout << "Invalid selection.\n";
                         }
