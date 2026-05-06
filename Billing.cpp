@@ -92,3 +92,20 @@ cout << "Status: " << status << endl;
 cout << "------------------------" << endl;
 return;
 }
+//Getters
+int Billing::getBillID() const
+{
+    return billID;
+}
+double Billing::getAmount() const
+{
+    return amount;
+}
+string Billing::getStatus() const
+{
+    return status;
+}
+string Billing::getPatient() const
+{
+    return patient;
+}
