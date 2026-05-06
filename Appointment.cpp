@@ -66,3 +66,13 @@ string Appointment::getStatus() const
 {
 return status;
 }
+Patient* Appointment::getPatient() const
+{
+    return patient;
+}
+
+Doctor* Appointment::getDoctor() const
+{
+    return doctor;
+}
+
